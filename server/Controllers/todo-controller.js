@@ -14,7 +14,7 @@ function format_date(date){
 function createTodo (req,res,next){
   let user = jwt.verify(Token,process.env.SECRET)
   Todos.create({
-    task: req.body.tasktoAdd,
+    task: req.body.task,
     status: 'Not Complete',
     createdAt: new Date().toUTCString(),
     user_id: user._id

@@ -17,5 +17,6 @@ router.post('/user',userController.createUser)
 router.post('/user/:id',userController.editUser)
 router.get('/deleteUser/:id',userController.deleteUser)
 router.get('/user/logout',userController.logout)
+// router.post('/user/loginFB',userController.loginFB)
 
 module.exports = router;

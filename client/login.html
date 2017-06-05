@@ -41,7 +41,7 @@
 				<div>
 					<form class="login">
 						<h3>Login</h3>
-						<div class="fb-login-button" onclick='loginFB()'data-max-rows="1" data-size="large" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
+						<button class="loginBtn loginBtn--facebook" id="fb-login" type="button" onclick="loginFB()" name="button">Login with Facebook</button>
 						<label for="name">Username:
 							<input type="text" id="name" v-model="username">
 						</label>
@@ -94,13 +94,11 @@
 			}(document, 'script', 'facebook-jssdk'));
 			function loginFB(){
 				FB.login(function(response) {
-					// console.log(response);
+					//  console.log(response);
 					FB.api('/me', {fields: 'id,name,email'}, function(response2) {
 						axios.post('http://localhost:3000/user/login',response2)
 						.then(token=>{
-							console.log(response2);
-							localStorage.setItem('token',token)
-							console.log(token);
+							localStorage.setItem('token',JSON.stringify(token.data))
 							checkToken()
 						})
 						.catch(err=>{
@@ -118,7 +116,7 @@
 					var x = document.getElementById("fb-login");
 					x.innerHTML = 'Logout';
 					x.setAttribute( "onclick", "logout()" );
-					window.location="index.html"
+					 window.location="index.html"
 				}
 			}
 		</script>

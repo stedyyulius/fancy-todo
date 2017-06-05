@@ -22,13 +22,11 @@ function createUser (req,res,next){
 
 function login (req,res,next){
   Users.findOne({
-    username: req.body.username
+    username: req.body.username || req.body.name
   },function(err,result){
     if(result === null){
       Users.create({
-        username: req.body.username,
-        password: req.body.password,
-        email:req.body.email,
+        username: req.body.name,
         picture: ""
       },function(err,result){
         var token = jwt.sign({_id:result._id,username:result.username,picture:result.picture},process.env.SECRET)
