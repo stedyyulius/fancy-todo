@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!-- Website template by freewebsitetemplates.com -->
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>To-Do-List</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<!-- <link href="css/bootstrap.css" rel='stylesheet' type='text/css' /> -->
+	<script src="https://unpkg.com/vue"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">	
+	<div id="header">
+		<a href="index.html"><img src="images/logo.png" alt="Logo"></a>
+	</div>
+	<div id="body">
+		<div>
+			<ul id="navigation">
+				<li>
+					<a href="index.html" class="link1" v-if="localStorage.getItem('token') !== null">To-do-list</a>
+				</li>
+				<li>
+					<a href="login.html" class="link2" v-if="localStorage.getItem('token') === null">Login</a>
+				</li>
+				<!-- <li>
+					<a href="newsblog.html" class="link1">News &amp; Blog</a>
+				</li>
+				<li>
+					<a href="about.html" class="link2">About</a>
+				</li> -->
+				<li class="current">
+					<a href="signup.html" class="link1">Sign Up</a>
+				</li>
+				<li>
+					<a href="#" class="link1" v-on:click="logout()" v-if="localStorage.getItem('token') !== null">Logout</a>
+				</li>
+			</ul>
+			<div id="contact">
+				<div>
+					<form action="index.html">
+						<h3>Sign Up</h3>
+						<label for="name">Username:
+							<input type="text" id="name" v-model="username">
+						</label>
+						<label for="emailadd">Password:
+							<input type="password"v-model="password">
+						</label>
+						<label for="message">Email:
+							<input type="email" id="emailadd" v-model="email">
+						</label>
+						<input type="submit" class="send" value="Send" v-on:click.prevent="signup()">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footer">
+		<div>
+			<!-- <div id="connect">
+				<h3>Social</h3>
+				<a href="http://freewebsitetemplates.com/go/facebook/" id="facebook" target="_blank">Facebook</a>
+				<a href="http://freewebsitetemplates.com/go/twitter/" id="twitter" target="_blank">Twitter</a>
+				<a href="http://freewebsitetemplates.com/go/googleplus/" id="googleplus" target="_blank">Google&#43;</a>
+			</div> -->
+		</div>
+		<p>
+			&copy; Copyright 2023. All rights reserved.
+		</p>
+	</div>
+</div>
+<script type="text/javascript">
+	var register = new Vue({
+		el:"#app",
+		data:{
+			username:"",
+			password:"",
+			email:""
+		},
+		methods:{
+			signup(){
+				var self = this;
+				axios.post('http://localhost:3000/user',{
+					username: self.username,
+					password: self.password,
+					email: self.email
+				})
+				.then(response=>{
+					alert(`${self.username} Registered!`)
+					window.location = 'login.html'
+				})
+				.catch(err=>{
+					console.log(err);
+				})
+			},
+			logout(){
+				localStorage.clear()
+				window.location = "login.html"
+			}
+		}
+	})
+</script>
+</body>
+</html>

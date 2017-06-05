@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<!-- Website template by freewebsitetemplates.com -->
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>To-Do-List</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<!-- <link href="css/bootstrap.css" rel='stylesheet' type='text/css' /> -->
+	<script src="https://unpkg.com/vue"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">	
+	<div id="header">
+		<a href="index.html"><img src="images/logo.png" alt="Logo"></a>
+	</div>
+	<div id="body">
+		<div>
+			<ul id="navigation">
+				<li>
+					<a href="index.html" class="link1" v-if="localStorage.getItem('token') !== null">To-do-list</a>
+				</li>
+				<li  class="current">
+					<a href="login.html" class="link2">Login</a>
+				</li>
+				<!-- <li>
+					<a href="newsblog.html" class="link1">News &amp; Blog</a>
+				</li> -->
+				<!-- <li>
+					<a href="about.html" class="link2">About</a>
+				</li> -->
+				<li>
+					<a href="signup.html" class="link1">Sign Up</a>
+				</li>
+				<li>
+					<a href="#" class="link1" v-on:click="logout" v-if="localStorage.getItem('token') !== null">Logout</a>
+				</li>
+			</ul>
+			<h2 class = 'welcome'>Welcome to SY's To-Do-List App</h2>
+			<div id="contact">
+				<div>
+					<form class="login">
+						<h3>Login</h3>
+						<div class="fb-login-button" onclick='loginFB()'data-max-rows="1" data-size="large" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
+						<label for="name">Username:
+							<input type="text" id="name" v-model="username">
+						</label>
+						<label for="emailadd">Password:
+							<input type="password" id="emailadd" v-model="password">
+						</label>
+						<input type="submit" class="send" value="Send" v-on:click.prevent="login()">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="footer">
+		<div>
+			<!-- <div id="connect">
+				<h3>Social</h3>
+				<a href="http://freewebsitetemplates.com/go/facebook/" id="facebook" target="_blank">Facebook</a>
+				<a href="http://freewebsitetemplates.com/go/twitter/" id="twitter" target="_blank">Twitter</a>
+				<a href="http://freewebsitetemplates.com/go/googleplus/" id="googleplus" target="_blank">Google&#43;</a>
+			</div> -->
+		</div>
+		<p>
+			&copy; Copyright Stedy @2017
+		</p>
+	</div>
+</div>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9&appId=1649591798414716";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script>
+			window.fbAsyncInit = function() {
+				FB.init({
+					appId            : '1649591798414716',
+					autoLogAppEvents : true,
+					xfbml            : true,
+					version          : 'v2.9'
+				});
+			};
+			(function(d, s, id){
+				var js, fjs = d.getElementsByTagName(s)[0];
+				if (d.getElementById(id)) {return;}
+				js = d.createElement(s); js.id = id;
+				js.src = "//connect.facebook.net/en_US/sdk.js";
+				fjs.parentNode.insertBefore(js, fjs);
+			}(document, 'script', 'facebook-jssdk'));
+			function loginFB(){
+				FB.login(function(response) {
+					// console.log(response);
+					FB.api('/me', {fields: 'id,name,email'}, function(response2) {
+						axios.post('http://localhost:3000/user/login',response2)
+						.then(token=>{
+							console.log(response2);
+							localStorage.setItem('token',token)
+							console.log(token);
+							checkToken()
+						})
+						.catch(err=>{
+							console.log(err);
+						})
+					});
+				}, {scope:'public_profile email'});
+			}
+			function logout(){
+				window.localStorage.clear();
+				window.location='/'
+			}
+			function checkToken(){
+				if(localStorage.getItem('token')){
+					var x = document.getElementById("fb-login");
+					x.innerHTML = 'Logout';
+					x.setAttribute( "onclick", "logout()" );
+					window.location="index.html"
+				}
+			}
+		</script>
+<script type="text/javascript">
+	var register = new Vue({
+		el:"#app",
+		data:{
+			username:"",
+			password:""
+		},
+		methods:{
+			login(){
+				var self = this;
+				axios.post(`http://localhost:3000/user/login`,{
+					username: self.username,
+					password: self.password
+				})
+				.then(response=>{
+					console.log(JSON.stringify(response.data));
+					localStorage.setItem('token',JSON.stringify(response.data))
+					window.location = 'index.html'
+				})
+				.catch(err=>{
+					console.log(err);
+				})
+			},
+			logout(){
+				localStorage.clear()
+				window.location = "login.html"
+			}
+		}
+	})
+</script>
+</body>
+</html>

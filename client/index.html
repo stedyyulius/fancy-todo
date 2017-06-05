@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<!-- Website template by freewebsitetemplates.com -->
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>To-Do-List</title>
+	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous"> -->
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<!-- <script src="js/jquery.min.js"></script> -->
+	<link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
+	<link href="css/bootstrap.min.css" rel='stylesheet' type='text/css' />
+	<link href="css/logo-nav.css" rel="stylesheet">
+	<!-- <script src="js/bootstrap.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/jquery.js"></script> -->	
+  <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+	<script src="https://unpkg.com/vue"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app" class ="pp" v-bind:style="{ backgroundImage: 'url('+ picture +')' }">
+	<div id="header">
+		<h2 class ="owner">{{user.username}}'s</h2>
+		<a href="index.html" class ="owner"><img src="images/logo.png" alt="Logo"></a>
+	</div>
+	<div id="body">
+		<div>
+			<ul id="navigation">
+				<li class="current">
+					<a href="index.html" class="link1">To-do-list</a>
+				</li>
+				<li>
+					<a href="login.html" class="link2" v-if="localStorage.getItem('token') === null">Login</a>
+				</li>
+				<!-- <li>
+					<a href="newsblog.html" class="link1">News &amp; Blog</a>
+				</li>
+				<li>
+					<a href="about.html" class="link2">About</a>
+				</li> -->
+				<li>
+					<a href="signup.html" class="link1" v-if="localStorage.getItem('token') === null">Sign Up</a>
+				</li>
+				<li>
+					<a href="#" class="link1" v-on:click="logout()" v-if="localStorage.getItem('token') !== null">Logout</a>
+				</li>
+			</ul>
+			<div id="home">
+				<div class="content">
+				<!-- <h1><span>{{user.username}}<br><br>To-Do-List</span></h1> -->
+
+				<h2 class="add" v-if="todos.length < 1">You have no todo list yet please make one!</h2>
+				<br>
+				<form v-if="localStorage.getItem('edit') === null">
+					<h2 class="add">Add Todo</h2>
+					<br>
+					<input type="text" v-model="tasktoAdd" placeholder="please input your task">
+					<button type="submit" v-on:click="addTodo()">Add Todo</button>
+				</form>
+				</div>
+				</div>
+				<br>
+				<br>
+				<br>
+				<br>
+				<form class="" v-if="localStorage.getItem('edit') !== null">
+					<h2 class="add">Edit</h2>
+					<h6>Task</h6>
+					<input type="text" v-model="task">
+					<h6>Status</h6>
+					<select v-model="status">
+						<option>{{status}}</option>
+						<option v-if="status === 'Completed'">Not Complete</option>
+						<option v-if="status === 'Not Complete'">Completed</option>
+					</select>
+					<br>
+					<br>
+					<button type="submit" class="btn btn-primary" v-on:click="editTodo(current,index)">Submit</button>
+				</form>	
+				<form class ="dp">
+						<h3>Change Background</h3>
+						<input type="text" v-model="tmp" placeholder="copy image url here">
+						<button type="button" v-on:click="changedp(user._id)">Change</button>
+				</form>
+				</div>		
+				<div class="container" id:="todos" >
+					<div class="row shop_box-top">
+						<a class="hovertodo" href="#"><div class="col-md-4 shop_box" v-for="(todo,index) in todos">
+							<div class="shop_desc" >
+								<!-- modal -->
+								<div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+									<div class="modal-dialog" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title" id="exampleModalLabel">Edit Todo</h5>
+												<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+											<div class="modal-body">
+												<form>
+													<div class="form-group">
+														<input type="text" class="form-control" v-model=task>
+													</div>
+													<select v-model="status">
+														<option>{{status}}</option>
+														<option v-if="status === 'Completed'">Not Complete</option>
+														<option v-if="status === 'Not Complete'">Completed</option>
+													</select>
+													<div class="modal-footer">
+														<button type="submit" class="btn btn-primary" v-on:click="editTodo(current)">Submit</button>
+														<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+													</div>
+														<div class="alert alert-danger" role="alert">
+															<!-- <strong>Oh snap!</strong> Change a few things up and try submitting again. -->
+														</div>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+												<!-- end modal -->
+								<p>{{index+1}}</p>
+								<a href="#" class="btn btn-success" v-on:click="complete(todo._id)" v-if="todo.status === 'Completed'"><span class="glyphicon glyphicon-ok"></span></a>
+								<h6 class="time">{{todo.createdAt}}</h6>
+								<h2 class="task">{{todo.task}}</h2>
+								<!-- <span class="reducedfrom">$66.00</span> -->
+								<h5 class ="status">{{todo.status}}</h5>
+								<a href="#" class="btn btn-success"  v-on:click="complete(todo._id)" v-if="todo.status !== 'Completed'"><span class="glyphicon glyphicon-ok"></span></a>
+								<!-- <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#edit" v-on:click="value(todo.task,todo.status,todo._id)"><span class="glyphicon glyphicon-edit"></span></a> -->
+								<a href="#" class="btn btn-primary" v-on:click="value(todo.task,todo.status,todo._id,index)"><span class="glyphicon glyphicon-edit"></span></a>
+								<a href="#" class="btn btn-danger" v-on:click="confirmDel(index,todo._id)"><span class="glyphicon glyphicon-trash"></span></a>
+							</div>
+						</div>
+				</div>
+			</div>
+		</div>	
+	<div id="footer">
+		<div>
+			<!-- <div id="connect">
+				<h3>Social</h3>
+				<a href="http://freewebsitetemplates.com/go/facebook/" id="facebook" target="_blank">Facebook</a>
+				<a href="http://freewebsitetemplates.com/go/twitter/" id="twitter" target="_blank">Twitter</a>
+				<a href="http://freewebsitetemplates.com/go/googleplus/" id="googleplus" target="_blank">Google&#43;</a>
+			</div> -->
+		</div>
+		<p>
+			&copy; Copyright Stedy@2017
+		</p>
+	</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function () {
+	$('.material-button-toggle').on("click", function () {
+			$(this).toggleClass('open');
+			$('.option').toggleClass('scale-on');
+	});
+});
+</script>
+<script type="text/javascript">
+	var todos = new Vue({
+		el:"#app",
+		data:{
+			todos:[],
+			task: "",
+			status: "Not Complete",
+			current:"",
+			picture: "",
+			tmp:"",
+			tasktoAdd: "",
+			index:0
+		},
+		methods:{
+			todolist(){
+				var self = this;
+				var user = JSON.parse(localStorage.getItem('token'))
+				axios.get(`http://localhost:3000/todo/${user._id}`)
+				.then(response=>{
+					self.todos = response.data
+				})
+				.catch(err=>{
+					console.log(err);
+				})
+			},
+			addTodo(){
+				var that = this;
+				axios.post('http://localhost:3000/todo',{
+					task: that.tasktoAdd
+				})
+				.then(response=>{
+				that.todos.push(response.data)
+				})
+				.catch(err=>{
+					console.log(err);
+				})
+			},
+			deleteTodo(index,id){
+				var ini = this;
+				axios.get(`http://localhost:3000/deleteTodo/${id}`)
+				.then(response=>{
+					ini.todos.splice(index,1)
+				})
+				.catch(err=>{
+					console.log(err);
+				})
+			},
+			confirmDel(index,id){
+				if(confirm('Are You Sure You Want To Delete This Task?')){
+					this.deleteTodo(index,id)
+				}
+				else{
+					return false
+				}
+			},
+			complete(id){
+				console.log('masuk complete');
+				var situ = this;
+				axios.post(`http://localhost:3000/todo/${id}`,{
+					status: "Completed"
+				})
+				.then(response=>{
+					 for(var i = 0;i < situ.todos.length;i++){
+						 if(situ.todos[i]._id === id){
+							 situ.todos[i].status = "Completed"
+						 }
+					 }
+				})
+				.catch(err=>{
+					console.log(err);
+				})
+			},
+			editTodo(id,index){
+				console.log('masuk sini');
+				var itu = this;
+						axios.post(`http://localhost:3000/todo/${id}`,{
+							task: itu.task,
+							status: itu.status
+						})
+						.then(response=>{
+							itu.todos[index].task = itu.task
+							itu.todos[index].status = itu.status
+							localStorage.removeItem('edit')
+							// location.reload()
+						})
+						.catch(err=>{
+							console.log(err);
+						})			
+				},
+			value(task,status,id,index){
+				localStorage.setItem('edit','true')
+				this.task = task
+				this.status = status
+				this.current = id
+				this.index = index
+			},
+			changedp(id){
+				var anjir = this;
+				axios.post(`http://localhost:3000/user/${id}`,{
+					picture: anjir.tmp
+				})
+				.then(response=>{
+					axios.get(`http://localhost:3000/user/${id}`)
+					.then(user=>{
+						console.log(user);
+						anjir.picture = user.data.picture
+					})
+				})
+			},
+			logout(){
+				axios.get('http://localhost:3000/user/logout')
+				.then(response=>{
+					localStorage.clear()
+					window.location = 'login.html'
+				})		
+			}
+		},
+		created: function(){
+			// location.reload()
+			var check = localStorage.getItem('token')
+			if(check === null){
+				window.location = 'login.html'
+			}
+			else{
+			 this.todolist()
+			}
+		},
+		computed:{
+			user(){
+				var user = JSON.parse(localStorage.getItem('token'))
+				this.picture = user.picture
+				return user
+			}
+		}
+	})
+</script>	
+</body>
+</html>

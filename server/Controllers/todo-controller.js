@@ -1,15 +1,21 @@
 const Todos = require('../Models/todo.js')
+const Users = require('../Models/user.js')
 const jwt = require('jsonwebtoken')
 const Storage = require('dom-storage')
 const localStorage = new Storage ('./db.json',{strict: false,ws:' '})
 const Token = localStorage.getItem('token')
+const moment = require('moment')
 require('dotenv').config()
 
+function format_date(date){
+  return moment(date).format('dddd, D MMM YYYY, h:mm')
+}
+
 function createTodo (req,res,next){
-  let user = jwt.verivy(Token,SECRET)
+  let user = jwt.verify(Token,process.env.SECRET)
   Todos.create({
-    task: req.body.task,
-    status: 'Not Completed',
+    task: req.body.tasktoAdd,
+    status: 'Not Complete',
     createdAt: new Date().toUTCString(),
     user_id: user._id
   },function(err,result){
@@ -49,9 +55,8 @@ function deleteTodo (req,res,next){
 }
 
 function listTodo (req,res,next){
-  let user = jwt.verify(Token,SECRET)
   Todos.find({
-    user_id: user._id
+    user_id: req.params.id
   },function(err,result){
     res.send(result)
   })
