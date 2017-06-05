@@ -77,6 +77,7 @@
 					</select>
 					<br>
 					<br>
+					<button type="submit" class="btn btn-danger" v-on:click="cancelEdit()">Cancel</button>
 					<button type="submit" class="btn btn-primary" v-on:click="editTodo(current,index)">Submit</button>
 				</form>	
 				<form class ="dp">
@@ -247,6 +248,14 @@ $(document).ready(function () {
 						.catch(err=>{
 							console.log(err);
 						})			
+				},
+				cancelEdit(){
+					localStorage.removeItem('edit')
+					this.task = ""
+					this.status = ""
+					this.current = ""
+					this.index = 0
+					location.reload()
 				},
 			value(task,status,id,index){
 				localStorage.setItem('edit','true')
